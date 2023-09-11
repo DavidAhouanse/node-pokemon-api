@@ -2,8 +2,9 @@
 //L’application répond “Hello World!” aux demandes adressées à l’URL racine (/) ou à la route racine. 
 
 const express = require('express'); // recuperer le paquet dans notre code
-const morgan = require('morgan');
-const favicon = require('serve-favicon');
+const morgan = require('morgan'); //middleware
+const bodyParser = require('body-parser'); //middleware
+const favicon = require('serve-favicon'); //middleware
 const { success, getUniqueId } = require('./helper.js')
 let pokemons = require('./mock-pokemon.js');
 
@@ -18,7 +19,8 @@ const port = 3000;
 
 app
     .use(favicon(__dirname + '/favicon.ico'))
-    .use(morgan('dev'));
+    .use(morgan('dev'))
+    .use(bodyParser.json())
 
 app.get('/', (req,res) => res.send('Helloo again, Express!')); // definir l'end point, app.METHOD(PATH, HANDLER)
 
@@ -47,7 +49,21 @@ app.post('/api/pokemons', (req, res) => {
     res.json(success(message,pokemonCreated));
 })
 
+app.put('/api/pokemons/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+    const pokemonUpdated = { ...req.body, id : id};
+    pokemons = pokemons.map(pokemon => {
+        return pokemon.id === id ? pokemonUpdated : pokemon
+    })
+    const message = `Le pokemon ${pokemonUpdated.name} a bien été modifié.`;
+    res.json(success(message,pokemonUpdated));
+})
+
+app.delete('/api/pokemons/:id', (req, res) => {
+    const id = parseInt(req.params.id);
+    const pokemonDeleted = pokemons.find(pokemon => pokemon.id === id );
+    pokemons = pokemons.filter(pokemon => pokemon.id !==  id);
+    const message = `Le pokemon ${pokemonDeleted.name} a bien été supprimé.`;
+    res.json(success(message,pokemonDeleted));
+})
 app.listen(port, () => console.log(`port : http://localhost:${port}`)); // demarrer l'API 
-
-
-
