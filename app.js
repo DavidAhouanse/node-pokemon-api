@@ -5,12 +5,18 @@ const express = require('express'); // recuperer le paquet dans notre code
 const morgan = require('morgan'); //middleware
 const bodyParser = require('body-parser'); //middleware
 const favicon = require('serve-favicon'); //middleware
+const { Sequelize, DataTypes } = require('sequelize');
 const { success, getUniqueId } = require('./helper.js')
-let pokemons = require('./mock-pokemon.js');
+let pokemons = require('./src/db/mock-pokemon.js');
+const PokemonModel = require('./src/models/pokemon');
 
 const app = express(); // creer une instance d'une app express, serveur web sur lequel va fonctionner l'API Rest
 const port = 3000;
 
+
+
+
+    
 // middleware qui crée un journal des differentes requetes du client 
 /*app.use((req, res, next) => {
     console.log('URL :', req.url);
